@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace Dazz\PhpMcpTools\Exception;
 
-interface ExceptionInterface
+interface ExceptionInterface extends \Throwable
 {
 
 }
