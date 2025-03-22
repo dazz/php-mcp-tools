@@ -1,4 +1,4 @@
-.PHONY: help install tests coverage cs csfix stan analyze clean
+.PHONY: help install deps-stable deps-low tests coverage cs cs-fix phpstan phpstan-baseline
 
 # Executables
 COMPOSER = composer
@@ -32,7 +32,10 @@ cs-fix: ## Fix code style
 	PHP_CS_FIXER_IGNORE_ENV=1 vendor/bin/php-cs-fixer fix
 
 phpstan: ## Run static analysis
-	vendor/bin/phpstan analyse src tests --level=max
+	vendor/bin/phpstan analyse
+
+phpstan-baseline: ## php static code analyse
+	vendor/bin/phpstan --memory-limit=-1 --generate-baseline
 
 rector: # Run rector
 	vendor/bin/rector
