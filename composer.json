@@ -1,0 +1,20 @@
+{
+    "name": "dazz/php-mcp-tools",
+    "description": "fill description",
+    "type": "library",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "dazz",
+            "email": "dazz@c-base.org"
+        }
+    ],
+    "require": {
+        "php": ">=8.2"
+    },
+    "autoload": {
+        "psr-4": {
+            "Dazz\\PhpMcpTools\\": "src/"
+        }
+    }
+}
