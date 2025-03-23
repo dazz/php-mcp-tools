@@ -6,5 +6,4 @@ namespace Dazz\PhpMcpTools\Exception;
 
 interface ExceptionInterface extends \Throwable
 {
-
 }

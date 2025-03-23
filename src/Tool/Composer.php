@@ -15,56 +15,58 @@ final readonly class Composer
         private string $workingDir,
     ) {
     }
-    
+
     public function exists(): string
     {
         return $this->isExecutableExisting() ? 'composer executable exists' : 'composer executable not found';
     }
-    
+
     /**
-     * @param string $command The Composer command to execute (e.g., "require", "update", "install")
-     * @param array<string> $args Additional arguments for the command
-     * @param bool $captureStderr Whether to capture stderr output
+     * @param string        $command       The Composer command to execute (e.g., "require", "update", "install")
+     * @param array<string> $args          Additional arguments for the command
+     * @param bool          $captureStderr Whether to capture stderr output
+     *
      * @return string Execution result
+     *
      * @throws InvalidArgumentException If composer executable is not found
      */
     public function execute(
         string $command,
         array $args = [],
-        bool $captureStderr = true
+        bool $captureStderr = true,
     ): string {
         if (!$this->isExecutableExisting()) {
             throw new InvalidArgumentException('Composer executable not found. Please install Composer.');
         }
-        
+
         if (!preg_match('/^[a-zA-Z0-9_\-]+$/', $command)) {
             throw new InvalidArgumentException('Invalid Composer command. Only alphanumeric characters, underscores, and hyphens are allowed.');
         }
-        
+
         $escapedArgs = array_map('escapeshellarg', $args);
-        
+
         $quietArg = '--no-interaction --quiet';
         if (!in_array('--verbose', $args) && !in_array('-v', $args)) {
             $quietArg .= ' --no-progress';
         }
-        
+
         $fullCommand = sprintf(
-            'composer %s %s %s%s', 
+            'composer %s %s %s%s',
             escapeshellarg($command),
-            $quietArg, 
+            $quietArg,
             implode(' ', $escapedArgs),
             $captureStderr ? ' 2>&1' : ''
         );
-        
+
         $currentDir = getcwd();
         chdir($this->workingDir);
-        
+
         exec($fullCommand, $output, $exitCode);
-        
+
         chdir($currentDir);
 
         $output = implode("\n", $output);
-        
+
         return <<<TOOL
             ## Composer {$command}
             exit_code: {$exitCode}
@@ -76,6 +78,7 @@ final readonly class Composer
     {
         $command = PHP_OS_FAMILY === 'Windows' ? 'where composer' : 'which composer';
         exec($command, $output, $returnCode);
+
         return $returnCode === 0;
     }
 }
