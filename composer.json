@@ -3,6 +3,7 @@
     "description": "fill description",
     "type": "library",
     "license": "MIT",
+    "keywords": ["mcp", "tool", "llm"],
     "authors": [
         {
             "name": "dazz",
