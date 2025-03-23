@@ -17,7 +17,7 @@ final class ComposerTest extends TestCase
 
     protected function setUp(): void
     {
-        $this->composer = new Composer(__DIR__);
+        $this->composer = new Composer(__DIR__ . '/../../');
     }
 
     #[Test]
@@ -41,9 +41,8 @@ final class ComposerTest extends TestCase
 
         $result = $this->composer->execute('--version');
 
-        self::assertIsString($result);
         self::assertStringContainsString('command: composer --version --no-interaction', $result);
-        self::assertStringContainsString('exit_code:', $result);
+        self::assertStringContainsString('exit_code: 0', $result);
         self::assertStringContainsString('output:', $result);
     }
 
@@ -70,16 +69,30 @@ final class ComposerTest extends TestCase
     }
 
     #[Test]
-    public function execute_with_args_works_correctly(): void
+    public function execute_with_options_works_correctly(): void
     {
         if (!str_contains($this->composer->exists(), 'exists')) {
             self::markTestSkipped('Composer is not installed');
         }
 
-        $result = $this->composer->execute('--version');
+        $result = $this->composer->execute('list', ['--version']);
 
         self::assertStringContainsString('exit_code: 0', $result);
         self::assertStringContainsString('Composer', $result);
+        self::assertStringNotContainsString('Reading config file', $result);
+    }
+
+    #[Test]
+    public function execute_with_arguments_works_correctly(): void
+    {
+        if (!str_contains($this->composer->exists(), 'exists')) {
+            self::markTestSkipped('Composer is not installed');
+        }
+
+        $result = $this->composer->execute('suggests', ['--by-package'], ['php-llm/mcp-sdk']);
+
+        self::assertStringContainsString("composer suggests --by-package --no-interaction 'php-llm/mcp-sdk'", $result);
+        self::assertStringContainsString('exit_code: 0', $result);
         self::assertStringNotContainsString('Reading config file', $result);
     }
 
@@ -96,6 +109,7 @@ final class ComposerTest extends TestCase
         // This test is mainly to verify that no errors occur when using a custom working directory
         $result = $composer->execute('--version');
 
-        self::assertStringContainsString('exit_code: 0', $result);
+        self::assertStringContainsString('composer --version --no-interaction', $result);
+        self::assertStringContainsString('Composer version ', $result);
     }
 }
