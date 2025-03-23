@@ -19,6 +19,9 @@ deps-stable: ## Update dependencies
 deps-low: ## Update dependencies
 	$(COMPOSER) update --prefer-lowest
 
+deps-bump:
+	$(COMPOSER) bump --dev-only
+
 tests: ## Run tests
 	$(PHPUNIT)
 
