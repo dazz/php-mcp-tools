@@ -40,7 +40,7 @@ phpstan-baseline: ## php static code analyse
 rector: # Run rector
 	vendor/bin/rector
 
-ci: ci-stable ## Run all ci tools
+ci: rector cs phpstan tests ## Run all ci tools
 
 ci-stable: deps-stable rector cs phpstan tests
 
