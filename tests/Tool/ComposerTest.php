@@ -21,18 +21,19 @@ final class ComposerTest extends TestCase
     }
     
     #[Test]
-    public function exists_returns_boolean(): void
+    public function exists_returns_string(): void
     {
         $result = $this->composer->exists();
         
-        self::assertIsBool($result);
+        self::assertIsString($result);
+        self::assertStringContainsString('composer executable', $result);
     }
     
     #[Test]
     public function execute_returns_expected_structure(): void
     {
         // Skip if composer is not installed
-        if (!$this->composer->exists()) {
+        if (!str_contains($this->composer->exists(), 'exists')) {
             self::markTestSkipped('Composer is not installed');
         }
         
@@ -48,7 +49,7 @@ final class ComposerTest extends TestCase
     public function execute_with_valid_command_succeeds(): void
     {
         // Skip if composer is not installed
-        if (!$this->composer->exists()) {
+        if (!str_contains($this->composer->exists(), 'exists')) {
             self::markTestSkipped('Composer is not installed');
         }
         
@@ -71,7 +72,7 @@ final class ComposerTest extends TestCase
     public function execute_with_args_works_correctly(): void
     {
         // Skip if composer is not installed
-        if (!$this->composer->exists()) {
+        if (!str_contains($this->composer->exists(), 'exists')) {
             self::markTestSkipped('Composer is not installed');
         }
         
@@ -80,5 +81,22 @@ final class ComposerTest extends TestCase
         self::assertStringContainsString('exit_code: 0', $result);
         self::assertStringContainsString('Composer', $result);
         self::assertStringNotContainsString('Reading config file', $result);
+    }
+    
+    #[Test]
+    public function constructor_with_working_dir_sets_directory(): void
+    {
+        $tempDir = sys_get_temp_dir();
+        $composer = new Composer($tempDir);
+        
+        // Skip if composer is not installed
+        if (!str_contains($composer->exists(), 'exists')) {
+            self::markTestSkipped('Composer is not installed');
+        }
+        
+        // This test is mainly to verify that no errors occur when using a custom working directory
+        $result = $composer->execute('--version');
+        
+        self::assertStringContainsString('exit_code: 0', $result);
     }
 }

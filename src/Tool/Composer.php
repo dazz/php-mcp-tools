@@ -11,22 +11,19 @@ use PhpLlm\LlmChain\Chain\Toolbox\Attribute\AsTool;
 #[AsTool(name: 'composer_execute', description: 'Execute a Composer command', method: 'execute')]
 final readonly class Composer
 {
-    public function exists(): bool
+    public function __construct(
+        private ?string $workingDir = null,
+    ) {
+    }
+    
+    public function exists(): string
     {
-        // Check if running on Windows or Unix-like system
-        $command = PHP_OS_FAMILY === 'Windows' ? 'where composer' : 'which composer';
-
-        // Execute the command and suppress output
-        exec($command, $output, $returnCode);
-
-        // Return true if the command was successful (composer exists)
-        return $returnCode === 0;
+        return $this->isExecutableExisting() ? 'composer executable exists' : 'composer executable not found';
     }
     
     /**
      * @param string $command The Composer command to execute (e.g., "require", "update", "install")
      * @param array<string> $args Additional arguments for the command
-     * @param string|null $workingDir The working directory to run composer in
      * @param bool $captureStderr Whether to capture stderr output
      * @return string Execution result
      * @throws InvalidArgumentException If composer executable is not found
@@ -34,10 +31,9 @@ final readonly class Composer
     public function execute(
         string $command,
         array $args = [],
-        ?string $workingDir = null,
         bool $captureStderr = true
     ): string {
-        if (!$this->exists()) {
+        if (!$this->isExecutableExisting()) {
             throw new InvalidArgumentException('Composer executable not found. Please install Composer.');
         }
         
@@ -47,7 +43,6 @@ final readonly class Composer
         
         $escapedArgs = array_map('escapeshellarg', $args);
         
-        // Add quiet mode to suppress unnecessary output
         $quietArg = '--no-interaction --quiet';
         if (!in_array('--verbose', $args) && !in_array('-v', $args)) {
             $quietArg .= ' --no-progress';
@@ -62,9 +57,9 @@ final readonly class Composer
         );
         
         $currentDir = null;
-        if ($workingDir !== null) {
+        if ($this->workingDir !== null) {
             $currentDir = getcwd();
-            chdir($workingDir);
+            chdir($this->workingDir);
         }
         
         exec($fullCommand, $output, $exitCode);
@@ -80,5 +75,12 @@ final readonly class Composer
             exit_code: {$exitCode}
             output: {$output}
             TOOL;
+    }
+
+    private function isExecutableExisting(): bool
+    {
+        $command = PHP_OS_FAMILY === 'Windows' ? 'where composer' : 'which composer';
+        exec($command, $output, $returnCode);
+        return $returnCode === 0;
     }
 }
