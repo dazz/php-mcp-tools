@@ -9,13 +9,6 @@ $finder = (new Finder())
     ->in(__DIR__ . '/tests')
 ;
 
-// Custom rule for test method names in snake_case
-$snakeCaseTestMethodsRules = [
-    'method_naming' => [
-        'test' => '/^test_[a-z][a-z0-9_]*$/',
-    ],
-];
-
 return (new Config())
     ->setParallelConfig(ParallelConfigFactory::detect())
     ->setRules([
@@ -23,6 +16,7 @@ return (new Config())
         'yoda_style' => false, // overrides @Symfony rule set
         'global_namespace_import' => false, // overrides @Symfony rule set
         'concat_space' => ['spacing' => 'one'], // overrides @Symfony rule set
+        'phpdoc_align' => false,
         'no_useless_else' => true,
         'no_useless_return' => true,
         'nullable_type_declaration' => true,
@@ -30,5 +24,7 @@ return (new Config())
         'heredoc_indentation' => ['indentation' => 'start_plus_one'],
         'php_unit_method_casing' => ['case' => 'snake_case'],
     ])
+    ->setIndent("    ") // Ensure proper indentation (4 spaces)
+    ->setLineEnding("\n")
 
     ->setFinder($finder);
