@@ -17,7 +17,7 @@ final class ComposerTest extends TestCase
     
     protected function setUp(): void
     {
-        $this->composer = new Composer();
+        $this->composer = new Composer(getcwd());
     }
     
     #[Test]

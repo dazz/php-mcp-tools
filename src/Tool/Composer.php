@@ -12,7 +12,7 @@ use PhpLlm\LlmChain\Chain\Toolbox\Attribute\AsTool;
 final readonly class Composer
 {
     public function __construct(
-        private ?string $workingDir = null,
+        private string $workingDir,
     ) {
     }
     
@@ -56,17 +56,12 @@ final readonly class Composer
             $captureStderr ? ' 2>&1' : ''
         );
         
-        $currentDir = null;
-        if ($this->workingDir !== null) {
-            $currentDir = getcwd();
-            chdir($this->workingDir);
-        }
+        $currentDir = getcwd();
+        chdir($this->workingDir);
         
         exec($fullCommand, $output, $exitCode);
         
-        if ($currentDir !== null) {
-            chdir($currentDir);
-        }
+        chdir($currentDir);
 
         $output = implode("\n", $output);
         
