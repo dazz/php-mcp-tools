@@ -2,7 +2,3 @@ parameters:
     ignoreErrors:
         # Ignore errors related to the PhpLlm\LlmChain\Chain\Toolbox\Attribute\AsTool attribute
         - '#Attribute class PhpLlm\\LlmChain\\Chain\\Toolbox\\Attribute\\AsTool does not exist.#'
-
-        # Ignore random_int parameter validation in Random class since we have our own validation
-        - message: '#Parameter \#1 \$min \(int<0, max>\) of function random_int expects lower number than parameter#'
-          path: src/Tool/Random.php
