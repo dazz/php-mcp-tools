@@ -8,15 +8,15 @@ PHPUNIT = vendor/bin/phpunit
 .DEFAULT_GOAL = help
 
 help: ## Show this help
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-15s\033[0m %s\n", $$1, $$2}'
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-15s\033[0m %s\n", $$1, $$2}'
 
 install: ## Install dependencies
 	$(COMPOSER) install
 
-deps-stable: ## Update dependencies
+deps-stable: ## Update dependencies to stable
 	$(COMPOSER) update --prefer-stable
 
-deps-low: ## Update dependencies
+deps-low: ## Update dependencies to lowest
 	$(COMPOSER) update --prefer-lowest
 
 deps-bump:
@@ -45,6 +45,9 @@ rector: # Run rector
 
 ci: rector cs phpstan tests ## Run all ci tools
 
-ci-stable: deps-stable rector cs phpstan tests
+ci-stable: deps-stable rector cs phpstan tests ## Install lowest dependencies and run all ci tools
 
-ci-lowest: deps-low rector cs phpstan tests
+ci-lowest: deps-low rector cs phpstan tests ## Install highest dependencies and run all ci tools
+
+ci-github: ## Run github pipeline to validate workflow (prevent push-and-pray)
+	act push --platform ubuntu-latest=catthehacker/ubuntu:act-latest
